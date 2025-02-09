@@ -1,0 +1,144 @@
+#Hyperparameter Tuning
+
+#learning_rate
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_curve, auc
+learning_rates = [1, 0.5, 0.25, 0.1, 0.05, 0.01]
+train_results = []
+test_results = []
+for eta in learning_rates:
+   model = GradientBoostingClassifier(learning_rate=eta)
+   model.fit(X_train, Y_train)
+   train_pred = model.predict(X_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(X_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+   from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(learning_rates, train_results, 'b', label='Train AUC')
+line2, = plt.plot(learning_rates, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('learning rate')
+plt.show()
+
+#n_estimators
+n_estimators = [1, 2, 4, 8, 16, 32, 64, 100, 200]
+train_results = []
+test_results = []
+for estimator in n_estimators:
+   model = GradientBoostingClassifier(n_estimators=estimator)
+   model.fit(X_train, Y_train)
+   train_pred = model.predict(X_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(X_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(n_estimators, train_results, 'b', label='Train AUC')
+line2, = plt.plot(n_estimators, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('n_estimators')
+plt.show()
+
+#max_depths
+max_depths = range(1, 32)
+train_results = []
+test_results = []
+for max_depth in max_depths:
+   model = GradientBoostingClassifier(max_depth=max_depth)
+   model.fit(X_train, Y_train)
+   train_pred = model.predict(X_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(X_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(max_depths, train_results, 'b', label='Train AUC')
+line2, = plt.plot(max_depths, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('Tree depth')
+plt.show()
+
+#min_samples_splits
+min_samples_splits = np.linspace(0.1, 1.0, 10, endpoint=True)
+train_results = []
+test_results = []
+for min_samples_split in min_samples_splits:
+   model = GradientBoostingClassifier(min_samples_split=min_samples_split)
+   model.fit(X_train, Y_train)
+   train_pred = model.predict(X_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(X_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(min_samples_splits, train_results, 'b', label='Train AUC')
+line2, = plt.plot(min_samples_splits, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('min samples split')
+plt.show()
+
+#min_samples_leafs
+min_samples_leafs = np.linspace(0.1, 0.5, 5, endpoint=True)
+train_results = []
+test_results = []
+for min_samples_leaf in min_samples_leafs:
+   model = GradientBoostingClassifier(min_samples_leaf=min_samples_leaf)
+   model.fit(X_train, Y_train)
+   train_pred = model.predict(X_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(X_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(min_samples_leafs, train_results, 'b', label='Train AUC')
+line2, = plt.plot(min_samples_leafs, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('min samples leaf')
+plt.show()
+
+#max_features
+max_features = list(range(1,X_train.shape[1]))
+train_results = []
+test_results = []
+for max_feature in max_features:
+   model = GradientBoostingClassifier(max_features=max_feature)
+   model.fit(X_train, Y_train)
+   train_pred = model.predict(X_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(X_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(max_features, train_results, 'b', label='Train AUC')
+line2, = plt.plot(max_features, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('max features')
+plt.show()
+
+from sklearn.ensemble import GradientBoostingClassifier
+abs2 = GradientBoostingClassifier(n_estimators=25, learning_rate=0.9, max_features=4, max_depth=2, min_samples_split=0.6, min_samples_leaf=0.50, random_state=0)
