@@ -1,0 +1,61 @@
+y_p1 = classifier1.predict(X_validate)
+y_p1
+
+from sklearn.metrics import confusion_matrix
+confusion_matrix(Y_validate, y_p1)
+
+from sklearn.metrics import accuracy_score
+accuracy_score(Y_validate, y_p1)
+
+from sklearn.metrics import precision_score
+precision_score(Y_validate, y_p1)
+
+from sklearn.metrics import roc_curve
+from matplotlib import pyplot
+fig = plt.figure(figsize = (10,10))
+fpr, tpr, thresholds = roc_curve(Y_validate, y_p1)
+pyplot.plot([0,1],[0,1], linestyle = "--", color = "red")
+pyplot.plot(fpr,tpr, color = "blue")
+plt.title("ROC Curve for LLR")
+pyplot.show()
+
+from sklearn.metrics import roc_auc_score
+print(roc_auc_score(Y_validate, y_p1))
+
+# Importing the metrics package from sklearn library
+from sklearn import metrics# Creating the confusion matrix
+cm1RR = metrics.confusion_matrix(Y_validate, y_p1)# Assigning columns names
+cm_df1RR = pd.DataFrame(cm1RR,
+            columns = ['Predicted Negative', 'Predicted Positive'],
+            index = ['Actual Negative', 'Actual Positive'])# Showing the confusion matrix
+cm_df1RR
+
+# Creating a function to report confusion metrics
+def confusion_metrics (conf_matrix):# save confusion matrix and slice into four pieces
+    TP = conf_matrix[1][1]
+    TN = conf_matrix[0][0]
+    FP = conf_matrix[0][1]
+    FN = conf_matrix[1][0]
+    print('True Positives:', TP)
+    print('True Negatives:', TN)
+    print('False Positives:', FP)
+    print('False Negatives:', FN)
+    # calculate accuracy
+    conf_accuracy = (float (TP+TN) / float(TP + TN + FP + FN))
+    # calculate mis-classification
+    conf_misclassification = 1- conf_accuracy
+    # calculate the sensitivity
+    conf_sensitivity = (TP / float(TP + FN))    # calculate the specificity
+    conf_specificity = (TN / float(TN + FP))
+    # calculate precision
+    conf_precision = (TN / float(TN + FP))    # calculate f_1 score
+    conf_f1 = 2 * ((conf_precision * conf_sensitivity) / (conf_precision + conf_sensitivity))
+    print('-'*50)
+    print(f'Accuracy: {round(conf_accuracy,2)}')
+    print(f'Mis-Classification: {round(conf_misclassification,2)}')
+    print(f'Sensitivity: {round(conf_sensitivity,2)}')
+    print(f'Specificity: {round(conf_specificity,2)}')
+    print(f'Precision: {round(conf_precision,2)}')
+    print(f'f_1 Score: {round(conf_f1,2)}')
+
+confusion_metrics (cm1RR)
