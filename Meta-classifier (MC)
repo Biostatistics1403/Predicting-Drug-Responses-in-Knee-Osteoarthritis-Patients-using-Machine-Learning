@@ -1,0 +1,107 @@
+#Predictions
+y_pred1 = classifier1.predict(X_test)
+
+y_pred11 = classifier1.predict(X_validate)
+
+model2= abs2.fit(X_train, Y_train)
+y_pred6 = model2.predict(X_test)
+
+model2= abs2.fit(X_train, Y_train)
+y_pred66 = model2.predict(X_validate)
+
+model100 = abc10.fit(X_train, Y_train)
+y_pred1000 = model100.predict(X_test)
+
+model100 = abc10.fit(X_train, Y_train)
+y_pred100010 = model100.predict(X_validate)
+
+#Train dataset for predictions
+csv = pd.DataFrame(y_pred1)
+csv.to_csv("Lasso.csv", index=False)
+
+csv = pd.DataFrame(y_pred6)
+csv.to_csv("GBM.csv", index=False)
+
+csv = pd.DataFrame(y_pred1000)
+csv.to_csv("AdaBoost.csv", index=False)
+
+#Test dataset for predictions
+csv = pd.DataFrame(y_pred11)
+csv.to_csv("LassoV.csv", index=False)
+
+csv = pd.DataFrame(y_pred66)
+csv.to_csv("GBMV.csv", index=False)
+
+csv = pd.DataFrame(y_pred100010)
+csv.to_csv("AdaBoostV.csv", index=False)
+
+#Making dataset from predictions
+actual_y1 = test.iloc[:,0]
+csv = pd.DataFrame(actual_y1)
+csv.to_csv("AY1.csv", index=False)
+
+actual_yV = validate.iloc[:,0]
+csv = pd.DataFrame(actual_yV)
+csv.to_csv("AYV.csv", index=False)
+
+dfd1 = pd.read_csv("predictions.csv")
+dfd1
+
+prediction_x = dfd1.iloc[:,0:3]
+prediction_y = dfd1.iloc[:,3]
+PX_train, PX_test, PY_train, PY_test = train_test_split(prediction_x, prediction_y, test_size=0.30, random_state=123, stratify=prediction_y)
+
+#Training of AdaBoost with predictions (meta classifier)
+#Hyperparameter Tuning
+#learning_rate
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import roc_curve, auc
+learning_rates = [(0.97 + x / 100) for x in range(0, 8)]
+train_results = []
+test_results = []
+for eta in learning_rates:
+   model = AdaBoostClassifier(learning_rate=eta)
+   model.fit(PX_train, PY_train)
+   train_pred = model.predict(PX_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(PY_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(PX_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(PY_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+   from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(learning_rates, train_results, 'b', label='Train AUC')
+line2, = plt.plot(learning_rates, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('learning rate')
+plt.show()
+
+#n_estimators
+n_estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 30]
+train_results = []
+test_results = []
+for estimator in n_estimators:
+   model = AdaBoostClassifier(n_estimators=estimator)
+   model.fit(PX_train, PY_train)
+   train_pred = model.predict(PX_train)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(PY_train, train_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   train_results.append(roc_auc)
+   y_pred = model.predict(PX_test)
+   false_positive_rate, true_positive_rate, thresholds = roc_curve(PY_test, y_pred)
+   roc_auc = auc(false_positive_rate, true_positive_rate)
+   test_results.append(roc_auc)
+from matplotlib.legend_handler import HandlerLine2D
+line1, = plt.plot(n_estimators, train_results, 'b', label='Train AUC')
+line2, = plt.plot(n_estimators, test_results, 'r', label='Test AUC')
+plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('AUC score')
+plt.xlabel('n_estimators')
+plt.show()
+
+from sklearn.ensemble import AdaBoostClassifier
+AAA10 = AdaBoostClassifier(n_estimators=5, learning_rate=0.97, random_state=0)
+MMM100 = AAA10.fit(PX_train, PY_train)
+y_predFFF = MMM100.predict(PX_test)
