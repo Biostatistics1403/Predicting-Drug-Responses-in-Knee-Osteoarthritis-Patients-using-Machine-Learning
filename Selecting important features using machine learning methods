@@ -1,0 +1,29 @@
+#LLR
+from sklearn.feature_selection import SelectFromModel
+selector = SelectFromModel(estimator = classifier1, threshold = 1e-5).fit(X_train, Y_train)
+la_coef = pd.DataFrame(selector.estimator_.coef_.reshape(-1,1), columns = ["Scores"]).sort_values(by = "Scores",ascending = False)
+la_coef
+
+#GBM
+from matplotlib import pyplot
+# get importance
+importance = abs2.feature_importances_
+# summarize feature importance
+for i,v in enumerate(importance):
+ print('Feature: %0d, Score: %.5f' % (i,v))
+# plot feature importance
+pyplot.bar([x for x in range(len(importance))], importance)
+pyplot.show()
+
+#AdaBoost
+from matplotlib import pyplot
+# get importance
+importance = abc10.feature_importances_
+# summarize feature importance
+for i,v in enumerate(importance):
+ print('Feature: %0d, Score: %.5f' % (i,v))
+# plot feature importance
+pyplot.bar([x for x in range(len(importance))], importance)
+pyplot.show()
+
+
