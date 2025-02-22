@@ -1,52 +1,28 @@
-#Hyperparameter Tuning
-
-#learning_rate
+from sklearn.datasets import make_classification
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.metrics import roc_curve, auc
-learning_rates = [(0.97 + x / 100) for x in range(0, 8)]
-train_results = []
-test_results = []
-for eta in learning_rates:
-   model = AdaBoostClassifier(learning_rate=eta)
-   model.fit(X_train, Y_train)
-   train_pred = model.predict(X_train)
-   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
-   roc_auc = auc(false_positive_rate, true_positive_rate)
-   train_results.append(roc_auc)
-   y_pred = model.predict(X_test)
-   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
-   roc_auc = auc(false_positive_rate, true_positive_rate)
-   test_results.append(roc_auc)
-   from matplotlib.legend_handler import HandlerLine2D
-line1, = plt.plot(learning_rates, train_results, 'b', label='Train AUC')
-line2, = plt.plot(learning_rates, test_results, 'r', label='Test AUC')
-plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel('AUC score')
-plt.xlabel('learning rate')
-plt.show()
+from sklearn.tree import DecisionTreeClassifier
+# Initialize AdaBoost with a base estimator
+base_estimator = DecisionTreeClassifier()  # you can change this to any other classifier
+ada_boost = AdaBoostClassifier(base_estimator=base_estimator)
 
-#n_estimators
-n_estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 30]
-train_results = []
-test_results = []
-for estimator in n_estimators:
-   model = AdaBoostClassifier(n_estimators=estimator)
-   model.fit(X_train, Y_train)
-   train_pred = model.predict(X_train)
-   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_train, train_pred)
-   roc_auc = auc(false_positive_rate, true_positive_rate)
-   train_results.append(roc_auc)
-   y_pred = model.predict(X_test)
-   false_positive_rate, true_positive_rate, thresholds = roc_curve(Y_test, y_pred)
-   roc_auc = auc(false_positive_rate, true_positive_rate)
-   test_results.append(roc_auc)
-from matplotlib.legend_handler import HandlerLine2D
-line1, = plt.plot(n_estimators, train_results, 'b', label='Train AUC')
-line2, = plt.plot(n_estimators, test_results, 'r', label='Test AUC')
-plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel('AUC score')
-plt.xlabel('n_estimators')
-plt.show()
+# Define the parameter grid
+param_grid = {
+    'n_estimators': [50, 100, 200],
+    'learning_rate': [0.01, 0.1, 1.0],
+    'base_estimator__max_depth': [1, 2, 3]  # parameters specific to the base estimator
+}
 
-from sklearn.ensemble import AdaBoostClassifier
-abc10 = AdaBoostClassifier(n_estimators=3, learning_rate=1.01, random_state=0)
+# Initialize GridSearchCV
+grid_search = GridSearchCV(estimator=ada_boost, param_grid=param_grid, cv=5, scoring='accuracy')
+
+# Fit the model
+grid_search.fit(X_train, y_train)
+
+# Best parameters and score
+print("Best parameters found: ", grid_search.best_params_)
+print("Best cross-validation score: ", grid_search.best_score_)
+
+# Evaluate on the test set
+best_model = grid_search.best_estimator_
+test_score = best_model.score(X_test, y_test)
+print("Test set accuracy: ", test_score)
